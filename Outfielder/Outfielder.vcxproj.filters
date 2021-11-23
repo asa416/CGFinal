@@ -24,6 +24,12 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="start.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="objRead.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="outfielder.h">
@@ -32,5 +38,12 @@
     <ClInclude Include="shader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="objRead.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="playervertex.glsl" />
+    <None Include="playerfragment.glsl" />
   </ItemGroup>
 </Project>

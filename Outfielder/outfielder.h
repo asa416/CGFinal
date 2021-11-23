@@ -12,14 +12,17 @@ class Outfielder
 {
 private:
 	float speed;
+	float height;
+	float weight;
 	glm::vec3 dressColor;
 	glm::mat4 model;
-	glm::vec4 position;
+	glm::vec3 position;
 
 public:
 	Outfielder();
-
-
+	void Move(const glm::vec3&);
+	glm::vec3 getColor() const;
+	glm::mat4 getModel() const;
 };
 
 #endif
