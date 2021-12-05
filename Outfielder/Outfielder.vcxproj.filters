@@ -41,9 +41,14 @@
     <ClInclude Include="objRead.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="playervertex.glsl" />
     <None Include="playerfragment.glsl" />
+    <None Include="floorvertex.glsl" />
+    <None Include="floorfragment.glsl" />
   </ItemGroup>
 </Project>

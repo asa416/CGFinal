@@ -150,8 +150,11 @@
     <ClInclude Include="objRead.h" />
     <ClInclude Include="outfielder.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="floorfragment.glsl" />
+    <None Include="floorvertex.glsl" />
     <None Include="playerfragment.glsl" />
     <None Include="playervertex.glsl" />
   </ItemGroup>
