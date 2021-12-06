@@ -141,18 +141,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mob.cpp" />
     <ClCompile Include="objRead.cpp" />
     <ClCompile Include="outfielder.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="start.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mob.h" />
     <ClInclude Include="objRead.h" />
     <ClInclude Include="outfielder.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ballfragment.glsl" />
+    <None Include="ballvertex.glsl" />
     <None Include="floorfragment.glsl" />
     <None Include="floorvertex.glsl" />
     <None Include="playerfragment.glsl" />

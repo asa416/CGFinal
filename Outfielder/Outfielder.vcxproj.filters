@@ -30,6 +30,9 @@
     <ClCompile Include="objRead.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="mob.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="outfielder.h">
@@ -44,11 +47,16 @@
     <ClInclude Include="stb_image.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
+    <ClInclude Include="mob.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="playervertex.glsl" />
     <None Include="playerfragment.glsl" />
     <None Include="floorvertex.glsl" />
     <None Include="floorfragment.glsl" />
+    <None Include="ballvertex.glsl" />
+    <None Include="ballfragment.glsl" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,6 @@
 
 int loadObj(const char* filename);
 int loadObj_normalize_center(const char* filename);
-
+void reset();
 
 #endif

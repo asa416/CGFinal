@@ -229,3 +229,22 @@ int loadObj_normalize_center (const char* filename)
 
 	return outvertex.size();
 }
+
+void reset()
+{
+	sumX = 0.0, sumY = 0.0, sumZ = 0.0;
+	aveX = 0, aveY = 0, aveZ = 0;
+	scaleX = 0, scaleY = 0, scaleZ = 0;
+	minX = 0.0, minY = 0.0, minZ = 0.0;
+	maxX = 0.0, maxY = 0.0, maxZ = 0.0;
+	scaleAll = 0;
+
+	sizeX = 0, sizeY = 0, sizeZ = 0;
+
+	vertexIndices.clear(), uvIndices.clear(), normalIndices.clear();
+	temp_vertices.clear();
+	temp_uvs.clear();
+	temp_normals.clear();
+	outvertex.clear(), outnormal.clear();
+	outuv.clear();
+}
