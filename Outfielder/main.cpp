@@ -15,6 +15,7 @@
 #include "objRead.h"
 #include "outfielder.h"
 #include "mob.h"
+#include <fmod.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
