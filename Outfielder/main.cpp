@@ -23,10 +23,17 @@ std::default_random_engine dre(rd());
 std::uniform_real_distribution<> urd_y{ 0.0, 0.3 };
 std::uniform_real_distribution<> urd_speed{ 0.05, 0.15 };
 
+class Point {
+public:
+	float x, z;
+	Point(float x, float z) : x(x), z(z) {}
+};
+
 GLvoid drawScene(GLvoid);
 GLvoid Reshape(int w, int h);
 GLvoid InitBuffer();
 void Timer(int value);
+void make_spline(float t);
 
 extern std::vector< glm::vec3 > outvertex, outnormal;
 extern std::vector< glm::vec2 > outuv;
@@ -39,6 +46,12 @@ Mob mobs[100];
 GLint width, height;
 int num_triangle;
 int num_cube;
+
+std::vector<Point> Points;
+Point start_point = Point(0.0, 8.0);
+
+int Level;
+std::vector<int> heights;
 
 float floorVertex[] = {
 	-1.0f, 0.0f, 1.0f, 0.0, 1.0, 0.0, 0.0, 0.0,
@@ -73,10 +86,16 @@ glm::mat4 floorMat = glm::mat4(1.0f);
 glm::mat4 ballModel;
 glm::mat4 bgMat = glm::mat4(1.0f);
 
+glm::mat4 ballRot = glm::mat4(1.0f);
+
+glm::vec3 ballPos;
+
 void main(int argc, char** argv)
 {
 	width = 1200;
 	height = 800;
+
+	Level = 10;
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -104,8 +123,8 @@ void main(int argc, char** argv)
 	floorMat = glm::scale(floorMat, glm::vec3(10.0f, 0.0f, 10.0f));
 	
 	ballModel = glm::mat4(1.0f);
-	ballModel = glm::translate(ballModel, glm::vec3(0.0, 10.0, 0.0));
-	ballModel = glm::scale(ballModel, glm::vec3(0.1f, 0.1f, 0.1f));
+	ballModel = glm::translate(ballModel, glm::vec3(start_point.x, 0.1, start_point.z));
+	ballModel = glm::scale(ballModel, glm::vec3(0.05f, 0.05f, 0.05f));
 
 	float y, z;
 	float speed;
@@ -116,6 +135,11 @@ void main(int argc, char** argv)
 		y = urd_y(dre);
 		float x = i / 5.0 - 10;
 		mobs[i].set(x, y, z, speed);
+	}
+
+	for (int i = 0; i < Level; ++i) {
+		Points.push_back(Point(2.0, -4.0));
+		heights.push_back(4.0);
 	}
 
 	InitBuffer();
@@ -301,6 +325,11 @@ GLvoid drawScene(GLvoid)
 
 	(*ballShader).use();
 	(*ballShader).setMat4("view", view);
+	ballModel = glm::mat4(1.0f);
+	ballModel = glm::translate(ballModel, ballPos);
+	ballModel = glm::scale(ballModel, glm::vec3(0.05, 0.05, 0.05));
+	ballModel = ballModel * ballRot;
+	(*ballShader).setMat4("model", ballModel);
 	tLocation1 = glGetUniformLocation((*ballShader).ID, "outTexture");
 	glUniform1i(tLocation1, 0);
 	glBindVertexArray(ball_vao);
@@ -317,10 +346,30 @@ GLvoid Reshape(int w, int h)
 	glViewport(0, 0, w, h);
 }
 
+float t = 0;
+float rad = 5.0;
+
 void Timer(int value) {
 	for (int i = 0; i < 100; ++i) {
 		mobs[i].move();
 	}
+	ballRot = glm::mat4(1.0f);
+	ballRot = glm::rotate(ballRot, glm::radians(rad), glm::vec3(1.0, 0.0, 0.0));
+	rad += 5;
+	if (t < 1) {
+		make_spline(t);
+		t += 0.01;
+	}
+	else {
+		t = 0;
+	}
+
 	glutPostRedisplay();
 	glutTimerFunc(100, Timer, 1);
+}
+
+void make_spline(float t)
+{
+	glm::vec3 mid = (glm::vec3(start_point.x, 0.1, start_point.z) + glm::vec3(Points[0].x, 0.1, Points[0].z)) * glm::vec3(0.5, 0.5, 0.5) + glm::vec3(0.0, heights[0], 0.0);
+	ballPos = (1 - t * t) * glm::vec3(start_point.x, 0.1, start_point.z) + 2 * t * (1 - t) * mid + t * t * glm::vec3(Points[0].x, 0.1, Points[0].z);
 }
