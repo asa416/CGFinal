@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ball.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mob.cpp" />
     <ClCompile Include="objRead.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="start.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ball.h" />
     <ClInclude Include="mob.h" />
     <ClInclude Include="objRead.h" />
     <ClInclude Include="outfielder.h" />

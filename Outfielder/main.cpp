@@ -35,6 +35,8 @@ GLvoid Reshape(int w, int h);
 GLvoid InitBuffer();
 void Timer(int value);
 void make_spline(float t);
+void Keyboard(unsigned char key, int x, int y);
+void Special(int key, int x, int y);
 
 extern std::vector< glm::vec3 > outvertex, outnormal;
 extern std::vector< glm::vec2 > outuv;
@@ -77,6 +79,16 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, 8.0f);
 glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+glm::vec3 b_cameraPos = glm::vec3(0.0f, 1.0f, 8.0f);
+glm::vec3 b_cameraDirection = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 b_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+glm::vec3 m_cameraPos = glm::vec3(0.0f, 5.0f, -2.0f);
+glm::vec3 m_cameraDirection = glm::vec3(0.0f, 0.0f, -2.0f);
+glm::vec3 m_cameraUp = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::mat4 m_view = glm::mat4(1.0f);
+
+
 glm::mat4 view = glm::mat4(1.0f);
 glm::mat4 projection = glm::mat4(1.0f);
 
@@ -87,9 +99,13 @@ glm::mat4 floorMat = glm::mat4(1.0f);
 glm::mat4 ballModel;
 glm::mat4 bgMat = glm::mat4(1.0f);
 
+glm::mat4 miniMap = glm::mat4(1.0f);
+
 glm::mat4 ballRot = glm::mat4(1.0f);
 
 glm::vec3 ballPos;
+
+float t = 0;
 
 void main(int argc, char** argv)
 {
@@ -121,6 +137,9 @@ void main(int argc, char** argv)
 	projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 50.0f);
 	projection = glm::translate(projection, glm::vec3(0.0f, 0.0f, -5.0f));
 	
+	miniMap = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -2.0f, 50.0f);
+	m_view = glm::lookAt(m_cameraPos, m_cameraDirection, m_cameraUp);
+
 	floorMat = glm::scale(floorMat, glm::vec3(10.0f, 0.0f, 10.0f));
 	
 	ballModel = glm::mat4(1.0f);
@@ -139,7 +158,7 @@ void main(int argc, char** argv)
 	}
 
 	for (int i = 0; i < Level; ++i) {
-		Points.push_back(Point(2.0, -4.0));
+		Points.push_back(Point(2.0, -5.0));
 		heights.push_back(4.0);
 	}
 
@@ -147,6 +166,8 @@ void main(int argc, char** argv)
 
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
+	glutKeyboardFunc(Keyboard);
+	glutSpecialFunc(Special);
 	glutTimerFunc(100, Timer, 1);
 	
 
@@ -185,9 +206,7 @@ GLvoid InitBuffer()
 	(*shader).setVec3("lightPos", lightPos);
 	(*shader).setVec3("lightColor", lightColor);
 	(*shader).setVec3("viewPos", cameraPos);
-	(*shader).setVec3("objectColor", (*player).getColor());
 	(*shader).setMat4("projection", projection);
-	(*shader).setMat4("model", (*player).getModel());
 
 	glGenVertexArrays(1, &floor_vao);
 	glGenBuffers(1, &floor_vbo);
@@ -292,13 +311,22 @@ GLvoid drawScene(GLvoid)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glViewport(0, 0, width, height);
+
 	(*shader).use();
 	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
+
+	if (t > 0.5) {
+		b_cameraDirection = glm::vec3(Points[0].x, 0.0, Points[0].z);
+		b_cameraPos = b_cameraDirection + glm::vec3(0.5, 3.0, 3.0);
+		view = glm::lookAt(b_cameraPos, b_cameraDirection, b_cameraUp);
+	}
+
+	//(*shader).setVec3("viewPos", cameraPos);
+	(*shader).setMat4("projection", projection);
 	(*shader).setMat4("view", view);
-	(*shader).setMat4("model", (*player).getModel());
-	(*shader).setVec3("objectColor", (*player).getColor());
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	player.get()->setColor(shader);
+	player.get()->draw(shader, vao);
 
 	(*shader).setVec3("objectColor", glm::vec3(0.0, 0.0, 1.0));
 	for (int i = 0; i < 100; ++i) {
@@ -308,6 +336,7 @@ GLvoid drawScene(GLvoid)
 
 	(*floorShader).use();
 	(*floorShader).setMat4("view", view);
+	(*floorShader).setMat4("projection", projection);
 	(*floorShader).setMat4("model", floorMat);
 	int tLocation1 = glGetUniformLocation((*floorShader).ID, "outTexture");
 	glUniform1i(tLocation1, 0);
@@ -326,10 +355,46 @@ GLvoid drawScene(GLvoid)
 
 	(*ballShader).use();
 	(*ballShader).setMat4("view", view);
+	(*ballShader).setMat4("projection", projection);
 	ballModel = glm::mat4(1.0f);
 	ballModel = glm::translate(ballModel, ballPos);
 	ballModel = glm::scale(ballModel, glm::vec3(0.05, 0.05, 0.05));
 	ballModel = ballModel * ballRot;
+	(*ballShader).setMat4("model", ballModel);
+	tLocation1 = glGetUniformLocation((*ballShader).ID, "outTexture");
+	glUniform1i(tLocation1, 0);
+	glBindVertexArray(ball_vao);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, btexture);
+	glDrawArrays(GL_TRIANGLES, 0, num_triangle);
+
+	// ------------------ ¹Ì´Ï¸Ê ---------------------------------
+	glViewport(width - 300, height - 200, 300, 200);
+
+	glm::mat4 sc = glm::mat4(1.0f);
+	sc = glm::scale(sc, glm::vec3(2.0, 2.0, 2.0));
+
+	(*floorShader).use();
+	(*floorShader).setMat4("projection", miniMap);
+	(*floorShader).setMat4("view", m_view);
+	(*floorShader).setMat4("model", floorMat);
+	tLocation1 = glGetUniformLocation((*floorShader).ID, "outTexture");
+	glUniform1i(tLocation1, 0);
+	glBindVertexArray(floor_vao);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	(*shader).use();
+	(*shader).setMat4("projection", miniMap);
+	(*shader).setMat4("view", m_view);
+	player.get()->setColor(shader);
+	player.get()->draw_mini(shader, vao);
+
+	(*ballShader).use();
+	(*ballShader).setMat4("projection", miniMap);
+	(*ballShader).setMat4("view", m_view);
+	ballModel = ballModel * sc;
 	(*ballShader).setMat4("model", ballModel);
 	tLocation1 = glGetUniformLocation((*ballShader).ID, "outTexture");
 	glUniform1i(tLocation1, 0);
@@ -347,7 +412,18 @@ GLvoid Reshape(int w, int h)
 	glViewport(0, 0, w, h);
 }
 
-float t = 0;
+void Keyboard(unsigned char key, int x, int y)
+{
+	switch (key) {
+	case 'q':
+	case 'Q':
+		glutLeaveMainLoop();
+		break;
+	}
+	glutPostRedisplay();
+}
+
+
 float rad = 5.0;
 
 void Timer(int value) {
@@ -365,6 +441,9 @@ void Timer(int value) {
 		t = 0;
 	}
 
+	glm::vec3 pp = player.get()->getPos();
+	std::cout << "ÁÂÇ¥" << pp.x << ',' << pp.z << '\n';
+
 	glutPostRedisplay();
 	glutTimerFunc(100, Timer, 1);
 }
@@ -373,4 +452,23 @@ void make_spline(float t)
 {
 	glm::vec3 mid = (glm::vec3(start_point.x, 0.1, start_point.z) + glm::vec3(Points[0].x, 0.1, Points[0].z)) * glm::vec3(0.5, 0.5, 0.5) + glm::vec3(0.0, heights[0], 0.0);
 	ballPos = (1 - t * t) * glm::vec3(start_point.x, 0.1, start_point.z) + 2 * t * (1 - t) * mid + t * t * glm::vec3(Points[0].x, 0.1, Points[0].z);
+}
+
+void Special(int key, int x, int y)
+{
+	switch (key) {
+	case GLUT_KEY_LEFT:
+		player.get()->Move(glm::vec3(-1.0, 0.0, 0.0));
+		break;
+	case GLUT_KEY_RIGHT:
+		player.get()->Move(glm::vec3(1.0, 0.0, 0.0));
+		break;
+	case GLUT_KEY_UP:
+		player.get()->Move(glm::vec3(0.0, 0.0, -1.0));
+		break;
+	case GLUT_KEY_DOWN:
+		player.get()->Move(glm::vec3(0.0, 0.0, 1.0));
+		break;
+	}
+	glutPostRedisplay();
 }

@@ -1,14 +1,70 @@
 #include "outfielder.h"
 
-Outfielder::Outfielder() : speed(0.05), height(0.2), weight(0.1), model(glm::mat4(1.0f)), dressColor(glm::vec3(1.0, 0.0, 0.0)), position(glm::vec3(0.0, 0.0, 0.0))
+Outfielder::Outfielder() : Pos(glm::vec3(0.0, 0.0, -4.0)), speed(0.05), height(0.2), weight(0.1), dressColor(glm::vec3(1.0, 0.0, 0.0))
 {
-	model = glm::translate(model, glm::vec3(0.0, 0.1, 0.0));
-	model = glm::scale(model, glm::vec3(weight, height, weight));
+	lr = 0.0;
+	rr = 0.0;
+	ratio = 1.0f;
+	bodyMat = glm::translate(bodyMat, glm::vec3(Pos.x, 0.4, Pos.z));
+	bodyMat = glm::scale(bodyMat, glm::vec3(0.1, 0.2, 0.1));
+	headMat = glm::translate(headMat, glm::vec3(Pos.x, 0.65, Pos.z));
+	headMat = glm::scale(headMat, glm::vec3(0.05, 0.06, 0.05));
+
+	leftlegMat = glm::translate(leftlegMat, glm::vec3(Pos.x + 0.05, 0.1, Pos.z));
+	leftlegMat = glm::scale(leftlegMat, glm::vec3(0.025, 0.1, 0.025));
+
+	rightlegMat = glm::translate(rightlegMat, glm::vec3(Pos.x - 0.05, 0.1, Pos.z));
+	rightlegMat = glm::scale(rightlegMat, glm::vec3(0.025, 0.1, 0.025));
+
+	lefthandMat = glm::translate(lefthandMat, glm::vec3(Pos.x + 0.1, 0.45, Pos.z));
+	lefthandMat = glm::scale(lefthandMat, glm::vec3(0.025, 0.1, 0.025));
+
+	righthandMat = glm::translate(righthandMat, glm::vec3(Pos.x - 0.1, 0.45, Pos.z));
+	righthandMat = glm::scale(righthandMat, glm::vec3(0.025, 0.1, 0.025));
+
 }
 
 void Outfielder::Move(const glm::vec3& dir)
 {
-	position = position + (dir * glm::vec3(speed, speed, speed));
+	glm::vec3 dist = dir * glm::vec3(speed, speed, speed);
+
+	Pos = Pos + dist;
+
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::translate(trans, dist);
+
+	this->bodyMat = trans * this->bodyMat;
+	this->headMat = trans * this->headMat;
+	this->leftlegMat = trans * this->leftlegMat;
+	this->rightlegMat = trans * this->rightlegMat;
+	this->lefthandMat = trans * this->lefthandMat;
+	this->righthandMat = trans * this->righthandMat;
+
+	this->leftrotl = glm::mat4(1.0f);
+	this->leftrotl = glm::translate(this->leftrotl, glm::vec3(Pos.x, 0.2, Pos.z));
+	this->leftrotl = glm::rotate(this->leftrotl, glm::radians(5.0f * lr), glm::vec3(1.0f, 0.0f, 0.0f));
+	this->leftrotl = glm::translate(this->leftrotl, glm::vec3(-Pos.x, -0.2, -Pos.z));
+
+	this->rightrotl = glm::mat4(1.0f);
+	this->rightrotl = glm::translate(this->rightrotl, glm::vec3(Pos.x, 0.2, Pos.z));
+	this->rightrotl = glm::rotate(this->rightrotl, glm::radians(5.0f * rr), glm::vec3(1.0f, 0.0f, 0.0f));
+	this->rightrotl = glm::translate(this->rightrotl, glm::vec3(-Pos.x, -0.2, -Pos.z));
+
+	this->leftroth = glm::mat4(1.0f);
+	this->leftroth = glm::translate(this->leftroth, glm::vec3(Pos.x, 0.45, Pos.z));
+	this->leftroth = glm::rotate(this->leftroth, glm::radians(5.0f * -lr), glm::vec3(1.0f, 0.0f, 0.0f));
+	this->leftroth = glm::translate(this->leftroth, glm::vec3(-Pos.x, -0.45, -Pos.z));
+
+	this->rightroth = glm::mat4(1.0f);
+	this->rightroth = glm::translate(this->rightroth, glm::vec3(Pos.x, 0.45, Pos.z));
+	this->rightroth = glm::rotate(this->rightroth, glm::radians(5.0f * -rr), glm::vec3(1.0f, 0.0f, 0.0f));
+	this->rightroth = glm::translate(this->rightroth, glm::vec3(-Pos.x, -0.45, -Pos.z));
+	lr += ratio;
+	rr -= ratio;
+	if (lr > 5.0)
+		ratio *= -1;
+	if (lr < -5.0)
+		ratio *= -1;
 }
 
 glm::vec3 Outfielder::getColor() const
@@ -16,12 +72,48 @@ glm::vec3 Outfielder::getColor() const
 	return dressColor;
 }
 
-glm::mat4 Outfielder::getModel() const
+void Outfielder::draw(const std::shared_ptr<Shader>& shader, GLuint vao)
 {
-	return model;
+	glBindVertexArray(vao);
+	(*shader).setMat4("model", rot * headMat);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * bodyMat);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * leftroth * lefthandMat);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * rightroth * righthandMat);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * leftrotl * leftlegMat);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * rightrotl * rightlegMat);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-//void Outfielder::Draw()
-//{
-//
-//}
+void Outfielder::draw_mini(const std::shared_ptr<Shader>& shader, GLuint vao)
+{
+	glm::mat4 sc = glm::mat4(1.0f);
+	sc = glm::scale(sc, glm::vec3(2.0, 2.0, 2.0));
+
+	glBindVertexArray(vao);
+	(*shader).setMat4("model", rot * headMat * sc);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * bodyMat * sc);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * leftroth * lefthandMat * sc);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * rightroth * righthandMat * sc);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * leftrotl * leftlegMat * sc);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	(*shader).setMat4("model", rot * rightrotl * rightlegMat * sc);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void Outfielder::setColor(const std::shared_ptr<Shader>& shader) {
+	(*shader).setVec3("objectColor", dressColor);
+}
+
+glm::vec3 Outfielder::getPos() const
+{
+	return Pos;
+}
