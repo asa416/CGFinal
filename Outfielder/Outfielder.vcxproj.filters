@@ -24,16 +24,10 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="start.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="objRead.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="mob.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ball.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,15 +45,6 @@
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="mob.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ball.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="fmod.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="fmod_common.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
