@@ -79,8 +79,8 @@ int loadObj(const char* filename)
 		}
 	}
 
-	std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
-	std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;
+	/*std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
+	std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;*/
 
 	aveX = sumX / vertexIndices.size();
 	aveY = sumY / vertexIndices.size();
@@ -101,7 +101,7 @@ int loadObj(const char* filename)
 		else
 			scaleAll = scaleZ;
 	}
-	std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
+	//std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
 
 	for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 		unsigned int vertexIndex = vertexIndices[i];
@@ -185,8 +185,8 @@ int loadObj_normalize_center (const char* filename)
 		}
 	}
 
-	std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
-	std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;
+	/*std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
+	std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;*/
 
 	aveX = sumX / vertexIndices.size();
 	aveY = sumY / vertexIndices.size();
@@ -197,9 +197,9 @@ int loadObj_normalize_center (const char* filename)
 
 	glm::vec3 temp;
 
-	std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
+	//std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
 
-	std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY << " scaleZ: " << scaleZ << std::endl;
+	//std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY << " scaleZ: " << scaleZ << std::endl;
 
 	for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 		unsigned int vertexIndex = vertexIndices[i];

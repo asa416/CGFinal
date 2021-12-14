@@ -9,9 +9,10 @@ uniform vec3 lightColor;
 uniform vec3 objectColor;
 uniform vec3 viewPos;
 
+uniform float ambientLight;
+
 void main()
 {
-	float ambientLight = 0.3;
 	vec3 ambient = ambientLight * lightColor;
 
 	vec3 normalVector = normalize(Normal);

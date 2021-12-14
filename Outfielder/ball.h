@@ -5,6 +5,8 @@ class Ball {
 	int level;
 public:
 	void levelUp() { level++; };
+	void start() {};
+	void end() {};
 	void update() {};
 	void draw() {};
 };

@@ -28,9 +28,13 @@ private:
 	glm::mat4 rightrotl = glm::mat4(1.0f);
 	glm::mat4 leftroth = glm::mat4(1.0f);
 	glm::mat4 rightroth = glm::mat4(1.0f);
+	glm::mat4 slideMat = glm::mat4(1.0f);
 	glm::vec3 dressColor;
 	float lr, rr;
 	float ratio;
+	bool catching;
+	bool sliding;
+	int slideCount;
 
 public:
 	Outfielder();
@@ -40,6 +44,11 @@ public:
 	void draw_mini(const std::shared_ptr<Shader>& shader, GLuint vao);
 	void setColor(const std::shared_ptr<Shader>& shader);
 	glm::vec3 getPos() const;
+	void setCatch();
+	bool isCatch();
+	bool isSlide();
+	void setSlide();
+	void stopSlide();
 };
 
 #endif

@@ -56,6 +56,12 @@
     <ClInclude Include="ball.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="fmod.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="fmod_common.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="playervertex.glsl" />
@@ -64,5 +70,7 @@
     <None Include="floorfragment.glsl" />
     <None Include="ballvertex.glsl" />
     <None Include="ballfragment.glsl" />
+    <None Include="bv.glsl" />
+    <None Include="bf.glsl" />
   </ItemGroup>
 </Project>
